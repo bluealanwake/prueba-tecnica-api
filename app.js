@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
-const { swaggerUi, specs } = require('./config/swagger');
+const { swaggerUi, createSwaggerConfig } = require('./config/swagger');
 
 // Cargar variables de entorno
 dotenv.config();
@@ -23,6 +23,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Determinar el puerto que se va a usar
+const PORT = process.env.PORT || 3000;
+
+// Configurar Swagger con el puerto dinámico
+const specs = createSwaggerConfig(PORT);
 
 // Documentación Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
@@ -218,7 +224,6 @@ app.use((err, req, res, next) => {
 });
 
 // Iniciar servidor
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
   console.log(`📍 URL: http://localhost:${PORT}`);
